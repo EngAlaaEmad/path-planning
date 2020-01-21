@@ -21,7 +21,7 @@
         {
             "label": "run_project",
             "type": "shell",
-            "command": "./build/path_planning & ./term3_sim_linux/term3_sim.x86_64 && fg",
+            "command": "./build/path_planning & ./term3_sim_linux/term3_sim.x86_64",
             "problemMatcher": [],
             "dependsOn": "build",
             "group": {
