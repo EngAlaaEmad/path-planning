@@ -9,19 +9,11 @@
             "command": "cd build && cmake .. && make",
             "problemMatcher": []
         },
-
-        {
-            "label": "run_program",
-            "type": "shell",
-            "command": "cd build && ./path_planning",
-            "problemMatcher": [],
-            "dependsOn": "build"
-        },
-
+        
         {
             "label": "run_project",
             "type": "shell",
-            "command": "./build/path_planning & ./term3_sim_linux/term3_sim.x86_64",
+            "command": "./run.sh & ./term3_sim_linux/term3_sim.x86_64 && fg",
             "problemMatcher": [],
             "dependsOn": "build",
             "group": {
