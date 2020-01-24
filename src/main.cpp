@@ -53,7 +53,7 @@ int main() {
 
   // Set lane and speed
   int lane = 1;
-  double ref_speed = 49.5; // mph
+  double ref_speed = 0.0; // mph
 
   h.onMessage([&lane, &ref_speed, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
                &map_waypoints_dx,&map_waypoints_dy]
@@ -101,6 +101,42 @@ int main() {
            *   sequentially every .02 seconds
            */
           
+          if (prev_size > 0){
+            car_s = end_path_s;
+          }
+
+          bool too_close = false;
+
+          for (int i = 0; i < sensor_fusion.size(); i++){
+            // data for ith car
+            float d = sensor_fusion[i][6];
+
+            // check if car is in our lane
+            if (d < (2+4*lane+2) && d > (2+4*lane-2)){
+              double vx = sensor_fusion[i][3];
+              double vy = sensor_fusion[i][4];
+              double check_speed = sqrt(vx*vx+vy*vy);
+              double check_car_s = sensor_fusion[i][5];
+
+              // project cars s value out to end of path (future pos)
+              check_car_s += (double)prev_size * 0.02 * check_speed;
+
+              if ((check_car_s > car_s) && (check_car_s - car_s < 30)){
+                too_close = true;
+              }
+
+            }
+          }
+          
+          // Slow down if too close
+          if (too_close){
+            ref_speed -= 0.224;
+          }
+          // Otherwise speed up incrementally
+          else if (ref_speed < 49.5){
+            ref_speed += 0.224;
+          }
+
           vector<double> anchor_x;
           vector<double> anchor_y;
 
