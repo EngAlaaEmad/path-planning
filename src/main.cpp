@@ -53,9 +53,12 @@ int main() {
 
   // Set lane and speed
   int lane = 1;
-  double ref_speed = 0.0; // mph
+  double current_speed = 0.0; // mph
 
-  h.onMessage([&lane, &ref_speed, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
+  const double MAX_SPEED = 49.5;
+  double ref_speed = MAX_SPEED;
+
+  h.onMessage([&lane, &current_speed, &ref_speed, &MAX_SPEED, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
                &map_waypoints_dx,&map_waypoints_dy]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                uWS::OpCode opCode) {
@@ -123,18 +126,23 @@ int main() {
 
               if ((check_car_s > car_s) && (check_car_s - car_s < 30)){
                 too_close = true;
+                ref_speed = check_speed;
+
+              }
+              else{
+                ref_speed = MAX_SPEED;
               }
 
             }
           }
           
           // Slow down if too close
-          if (too_close){
-            ref_speed -= 0.224;
+          if (current_speed > ref_speed){
+            current_speed -= 0.224;
           }
           // Otherwise speed up incrementally
-          else if (ref_speed < 49.5){
-            ref_speed += 0.224;
+          else if (current_speed < MAX_SPEED){
+            current_speed += 0.224;
           }
 
           vector<double> anchor_x;
@@ -219,7 +227,7 @@ int main() {
           // Fill up rest of path with interpolated values
           for (int i = 1; i <= 50-prev_size; i++){
 
-            double N = target_dist/(0.02*ref_speed/2.24);
+            double N = target_dist/(0.02*current_speed/2.24);
             double x_point = x_add_on + target_x/N;
             double y_point = s(x_point);
 
