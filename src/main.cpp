@@ -138,11 +138,11 @@ int main() {
           
           // Slow down if too close
           if (current_speed > ref_speed){
-            current_speed -= 0.224;
+            current_speed -= 0.448;
           }
           // Otherwise speed up incrementally
           else if (current_speed < MAX_SPEED){
-            current_speed += 0.224;
+            current_speed += 0.448;
           }
 
           vector<double> anchor_x;
