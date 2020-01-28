@@ -108,7 +108,7 @@ int main() {
             car_s = end_path_s;
           }
 
-          bool too_close = false;
+          bool car_ahead = false;
 
           for (int i = 0; i < sensor_fusion.size(); i++){
             // data for ith car
@@ -124,25 +124,27 @@ int main() {
               // project cars s value out to end of path (future pos)
               check_car_s += (double)prev_size * 0.02 * check_speed;
 
-              if ((check_car_s > car_s) && (check_car_s - car_s < 30)){
-                too_close = true;
+              if ((check_car_s > car_s) && (check_car_s - car_s < 2*current_speed*0.447)){
+                car_ahead = true;
                 ref_speed = check_speed;
+                std::cout << "Car ahead, set refspeed to " << ref_speed << std::endl;
 
-              }
-              else{
-                ref_speed = MAX_SPEED;
               }
 
             }
           }
+
+          std::cout << "Car ahead: " << car_ahead << std::endl;
           
           // Slow down if too close
-          if (current_speed > ref_speed){
-            current_speed -= 0.448;
+          if (car_ahead == true && current_speed > ref_speed){
+            std::cout << "Slowing down..." << std::endl;
+            current_speed -= 0.224;
           }
           // Otherwise speed up incrementally
           else if (current_speed < MAX_SPEED){
-            current_speed += 0.448;
+            current_speed += 0.224;
+            std::cout << "Accelerating..." << std::endl;
           }
 
           vector<double> anchor_x;
