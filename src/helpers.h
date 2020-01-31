@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "spline.h"
+#include "vehicle.h"
 
 // for convenience
 using std::string;
@@ -155,28 +156,28 @@ vector<double> getXY(double s, double d, const vector<double> &maps_s,
   return {x,y};
 }
 
-vector<vector<double>> generate_trajectory(double car_x, double car_y, double car_yaw, double car_s, double current_speed, double lane, vector<double> previous_path_x, vector<double> previous_path_y, vector<double> map_waypoints_s, vector<double> map_waypoints_x, vector<double> map_waypoints_y){
+vector<vector<double>> generate_trajectory(Vehicle car, double current_speed, double lane, vector<double> previous_path_x, vector<double> previous_path_y, vector<double> map_waypoints_s, vector<double> map_waypoints_x, vector<double> map_waypoints_y){
   
   vector<double> anchor_x;
   vector<double> anchor_y;
 
-  double ref_x = car_x;
-  double ref_y = car_y;
-  double ref_yaw = deg2rad(car_yaw);
+  double ref_x = car.x;
+  double ref_y = car.y;
+  double ref_yaw = deg2rad(car.yaw);
 
   int prev_size = previous_path_x.size();
 
   if (prev_size < 2){
 
     // Use two points to make the path tangent to the car
-    double prev_car_x = car_x - cos(car_yaw);
-    double prev_car_y = car_y - sin(car_yaw);
+    double prev_car_x = car.x - cos(car.yaw);
+    double prev_car_y = car.y - sin(car.yaw);
 
     anchor_x.push_back(prev_car_x);
-    anchor_x.push_back(car_x);
+    anchor_x.push_back(car.x);
 
     anchor_y.push_back(prev_car_y);
-    anchor_y.push_back(car_y);
+    anchor_y.push_back(car.y);
 
   }
 
@@ -196,9 +197,9 @@ vector<vector<double>> generate_trajectory(double car_x, double car_y, double ca
   }
 
     // Add 30m evenly spaced points converted from Frenet coordinates to XY
-    vector<double> next_wp0 = getXY(car_s + 30, (2+4*lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
-    vector<double> next_wp1 = getXY(car_s + 60, (2+4*lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
-    vector<double> next_wp2 = getXY(car_s + 90, (2+4*lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
+    vector<double> next_wp0 = getXY(car.s + 30, (2+4*lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
+    vector<double> next_wp1 = getXY(car.s + 60, (2+4*lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
+    vector<double> next_wp2 = getXY(car.s + 90, (2+4*lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
 
     anchor_x.push_back(next_wp0[0]);
     anchor_x.push_back(next_wp1[0]);

@@ -7,6 +7,7 @@
 #include "Eigen-3.3/Eigen/QR"
 #include "helpers.h"
 #include "json.hpp"
+#include "vehicle.h"
 
 // for convenience
 using nlohmann::json;
@@ -77,12 +78,13 @@ int main() {
           // j[1] is the data JSON object
           
           // Main car's localization Data
-          double car_x = j[1]["x"];
-          double car_y = j[1]["y"];
-          double car_s = j[1]["s"];
-          double car_d = j[1]["d"];
-          double car_yaw = j[1]["yaw"];
-          double car_speed = j[1]["speed"];
+          double x = j[1]["x"];
+          double y = j[1]["y"];
+          double s = j[1]["s"];
+          double d = j[1]["d"];
+          double yaw = j[1]["yaw"];
+          double speed = j[1]["speed"];
+          Vehicle car(x, y, s, d, yaw, speed);
 
           // Previous path data given to the Planner
           auto previous_path_x = j[1]["previous_path_x"];
@@ -104,7 +106,7 @@ int main() {
            */
           
           if (prev_size > 0){
-            car_s = end_path_s;
+            car.s = end_path_s;
           }
 
           bool car_ahead = false;
@@ -123,7 +125,7 @@ int main() {
               // project cars s value out to end of path (future pos)
               check_car_s += (double)prev_size * 0.02 * check_speed;
 
-              if ((check_car_s > car_s) && (check_car_s - car_s < 2*current_speed*0.447)){
+              if ((check_car_s > car.s) && (check_car_s - car.s < 2*current_speed*0.447)){
                 car_ahead = true;
                 ref_speed = check_speed;
                 std::cout << "Car ahead, set refspeed to " << ref_speed << std::endl;
@@ -146,7 +148,7 @@ int main() {
             std::cout << "Accelerating..." << std::endl;
           }
 
-          vector<vector<double>> trajectory = generate_trajectory(car_x, car_y, car_yaw, car_s, current_speed, lane, previous_path_x, previous_path_y, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+          vector<vector<double>> trajectory = generate_trajectory(car, current_speed, lane, previous_path_x, previous_path_y, map_waypoints_s, map_waypoints_x, map_waypoints_y);
           vector<double> next_x_vals = trajectory[0];
           vector<double> next_y_vals = trajectory[1];
           
