@@ -156,7 +156,7 @@ vector<double> getXY(double s, double d, const vector<double> &maps_s,
   return {x,y};
 }
 
-vector<vector<double>> generate_trajectory(Vehicle car, double current_speed, double lane, vector<double> previous_path_x, vector<double> previous_path_y, vector<double> map_waypoints_s, vector<double> map_waypoints_x, vector<double> map_waypoints_y){
+vector<vector<double>> generate_trajectory(Vehicle car, double lane, vector<double> previous_path_x, vector<double> previous_path_y, vector<double> map_waypoints_s, vector<double> map_waypoints_x, vector<double> map_waypoints_y){
   
   vector<double> anchor_x;
   vector<double> anchor_y;
@@ -243,7 +243,7 @@ vector<vector<double>> generate_trajectory(Vehicle car, double current_speed, do
     // Fill up rest of path with interpolated values
     for (int i = 1; i <= 50-prev_size; i++){
 
-      double N = target_dist/(0.02*current_speed/2.24);
+      double N = target_dist/(0.02*car.desired_speed/2.24);
       double x_point = x_add_on + target_x/N;
       double y_point = s(x_point);
 

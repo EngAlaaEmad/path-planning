@@ -84,7 +84,7 @@ int main() {
           double d = j[1]["d"];
           double yaw = j[1]["yaw"];
           double speed = j[1]["speed"];
-          Vehicle car(x, y, s, d, yaw, speed);
+          Vehicle car(x, y, s, d, yaw, speed, current_speed);
 
           // Previous path data given to the Planner
           auto previous_path_x = j[1]["previous_path_x"];
@@ -105,50 +105,10 @@ int main() {
            *   sequentially every .02 seconds
            */
           
-          if (prev_size > 0){
-            car.s = end_path_s;
-          }
+          car.keep_lane(lane, ref_speed, MAX_SPEED, previous_path_x, previous_path_y, end_path_s, sensor_fusion);
 
-          bool car_ahead = false;
-
-          for (int i = 0; i < sensor_fusion.size(); i++){
-            // data for ith car
-            float d = sensor_fusion[i][6];
-
-            // check if car is in our lane
-            if (d < (2+4*lane+2) && d > (2+4*lane-2)){
-              double vx = sensor_fusion[i][3];
-              double vy = sensor_fusion[i][4];
-              double check_speed = sqrt(vx*vx+vy*vy);
-              double check_car_s = sensor_fusion[i][5];
-
-              // project cars s value out to end of path (future pos)
-              check_car_s += (double)prev_size * 0.02 * check_speed;
-
-              if ((check_car_s > car.s) && (check_car_s - car.s < 2*current_speed*0.447)){
-                car_ahead = true;
-                ref_speed = check_speed;
-                std::cout << "Car ahead, set refspeed to " << ref_speed << std::endl;
-
-              }
-
-            }
-          }
-
-          std::cout << "Car ahead: " << car_ahead << std::endl;
-          
-          // Slow down if too close
-          if (car_ahead == true && current_speed > ref_speed){
-            std::cout << "Slowing down..." << std::endl;
-            current_speed -= 0.224;
-          }
-          // Otherwise speed up incrementally
-          else if (current_speed < MAX_SPEED){
-            current_speed += 0.224;
-            std::cout << "Accelerating..." << std::endl;
-          }
-
-          vector<vector<double>> trajectory = generate_trajectory(car, current_speed, lane, previous_path_x, previous_path_y, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+          vector<vector<double>> trajectory = generate_trajectory(car, lane, previous_path_x, previous_path_y, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+          current_speed = car.desired_speed;
           vector<double> next_x_vals = trajectory[0];
           vector<double> next_y_vals = trajectory[1];
           
