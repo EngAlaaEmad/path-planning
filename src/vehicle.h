@@ -5,6 +5,7 @@
 #include <vector>
 
 using std::vector;
+using std::string;
 
 class Vehicle {
 
@@ -21,6 +22,7 @@ class Vehicle {
         double yaw;
         double speed;
         double desired_speed = 0.0;
+        string state = "KEEP_LANE";
         void keep_lane(int lane, double ref_speed, double MAX_SPEED, vector<double> previous_path_x, vector<double> previous_path_y, double end_path_s, vector<vector<double>> sensor_data);
         
         ~Vehicle();

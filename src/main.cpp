@@ -109,6 +109,8 @@ int main() {
           vector<vector<double>> trajectory = generate_trajectory(car, lane, previous_path_x, previous_path_y, map_waypoints_s, map_waypoints_x, map_waypoints_y);
           vector<double> next_x_vals = trajectory[0];
           vector<double> next_y_vals = trajectory[1];
+
+          std::cout << "Vehicle state: " << car.state << std::endl;
           
           // END
           json msgJson;

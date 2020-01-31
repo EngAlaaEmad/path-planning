@@ -1,6 +1,7 @@
 #include "vehicle.h"
 #include <math.h>
 #include <vector>
+#include <iostream>
 
 using std::vector;
 
@@ -48,6 +49,8 @@ void Vehicle::keep_lane(int lane, double ref_speed, double MAX_SPEED, vector<dou
           else if (this->desired_speed < MAX_SPEED){
             this->desired_speed += 0.224;
           }
+
+          this->state = "KEEP_LANE";
 
 }
 
