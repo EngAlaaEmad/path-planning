@@ -53,12 +53,12 @@ int main() {
 
   // Set lane and speed
   int lane = 1;
-  double current_speed = 0.0; // mph
-
   const double MAX_SPEED = 49.5;
   double ref_speed = MAX_SPEED;
 
-  h.onMessage([&lane, &current_speed, &ref_speed, &MAX_SPEED, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
+  Vehicle car;
+
+  h.onMessage([&lane, &ref_speed, &MAX_SPEED, &car, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
                &map_waypoints_dx,&map_waypoints_dy]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                uWS::OpCode opCode) {
@@ -78,13 +78,12 @@ int main() {
           // j[1] is the data JSON object
           
           // Main car's localization Data
-          double x = j[1]["x"];
-          double y = j[1]["y"];
-          double s = j[1]["s"];
-          double d = j[1]["d"];
-          double yaw = j[1]["yaw"];
-          double speed = j[1]["speed"];
-          Vehicle car(x, y, s, d, yaw, speed, current_speed);
+          car.x = j[1]["x"];
+          car.y = j[1]["y"];
+          car.s = j[1]["s"];
+          car.d = j[1]["d"];
+          car.yaw = j[1]["yaw"];
+          car.speed = j[1]["speed"];
 
           // Previous path data given to the Planner
           auto previous_path_x = j[1]["previous_path_x"];
@@ -108,11 +107,10 @@ int main() {
           car.keep_lane(lane, ref_speed, MAX_SPEED, previous_path_x, previous_path_y, end_path_s, sensor_fusion);
 
           vector<vector<double>> trajectory = generate_trajectory(car, lane, previous_path_x, previous_path_y, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-          current_speed = car.desired_speed;
           vector<double> next_x_vals = trajectory[0];
           vector<double> next_y_vals = trajectory[1];
           
-          // END#include "spline.h"
+          // END
           json msgJson;
 
           msgJson["next_x"] = next_x_vals;
