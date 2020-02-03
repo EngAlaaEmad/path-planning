@@ -8,6 +8,7 @@
 #include "helpers.h"
 #include "json.hpp"
 #include "vehicle.h"
+#include "planner.h"
 
 // for convenience
 using nlohmann::json;
@@ -57,8 +58,9 @@ int main() {
   double ref_speed = MAX_SPEED;
 
   Vehicle car;
+  Planner path_planner;
 
-  h.onMessage([&lane, &ref_speed, &MAX_SPEED, &car, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
+  h.onMessage([&lane, &ref_speed, &MAX_SPEED, &car, &path_planner, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
                &map_waypoints_dx,&map_waypoints_dy]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                uWS::OpCode opCode) {
@@ -106,7 +108,7 @@ int main() {
           
           car.keep_lane(lane, ref_speed, MAX_SPEED, previous_path_x, previous_path_y, end_path_s, sensor_fusion);
 
-          vector<vector<double>> trajectory = generate_trajectory(car, lane, previous_path_x, previous_path_y, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+          vector<vector<double>> trajectory = path_planner.generate_trajectory(car, lane, previous_path_x, previous_path_y, map_waypoints_s, map_waypoints_x, map_waypoints_y);
           vector<double> next_x_vals = trajectory[0];
           vector<double> next_y_vals = trajectory[1];
 
