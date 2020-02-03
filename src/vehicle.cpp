@@ -11,47 +11,84 @@ Vehicle::Vehicle(double x, double y, double s, double d, double yaw, double spee
                 x(x), y(y), s(s), d(d), yaw(yaw), speed(speed), desired_speed(desired_speed){}
 
 void Vehicle::keep_lane(int lane, double ref_speed, double MAX_SPEED, vector<double> previous_path_x, vector<double> previous_path_y, double end_path_s, vector<vector<double>> sensor_data){
-    
-    int prev_size = previous_path_x.size();
-    if (prev_size > 0){
-            this->s = end_path_s;
-          }
 
-          bool car_ahead = false;
+  int prev_size = previous_path_x.size();
+  if (prev_size > 0)
+  {
+    this->s = end_path_s;
+  }
 
-          for (int i = 0; i < sensor_data.size(); i++){
-            // data for ith car
-            float d = sensor_data[i][6];
+  bool car_ahead = false;
 
-            // check if car is in our lane
-            if (d < (2+4*lane+2) && d > (2+4*lane-2)){
-              double vx = sensor_data[i][3];
-              double vy = sensor_data[i][4];
-              double check_speed = sqrt(vx*vx+vy*vy);
-              double check_car_s = sensor_data[i][5];
+  for (int i = 0; i < sensor_data.size(); i++)
+  {
+    // data for ith car
+    float d = sensor_data[i][6];
 
-              // project cars s value out to end of path (future pos)
-              check_car_s += (double)prev_size * 0.02 * check_speed;
+    // check if car is in our lane
+    if (d < (2 + 4 * lane + 2) && d > (2 + 4 * lane - 2))
+    {
+      double vx = sensor_data[i][3];
+      double vy = sensor_data[i][4];
+      double check_speed = sqrt(vx * vx + vy * vy);
+      double check_car_s = sensor_data[i][5];
 
-              if ((check_car_s > this->s) && (check_car_s - this->s < 2*(this->desired_speed)*0.447)){
-                car_ahead = true;
-                ref_speed = check_speed;
-              }
+      // project cars s value out to end of path (future pos)
+      check_car_s += (double)prev_size * 0.02 * check_speed;
 
-            }
-          }
-          
-          // Slow down if too close
-          if (car_ahead == true && this->desired_speed > ref_speed){
-            this->desired_speed -= 0.224;
-          }
-          // Otherwise speed up incrementally
-          else if (this->desired_speed < MAX_SPEED){
-            this->desired_speed += 0.224;
-          }
+      if ((check_car_s > this->s) && (check_car_s - this->s < 2 * (this->desired_speed) * 0.447))
+      {
+        car_ahead = true;
+        ref_speed = check_speed;
+      }
+    }
+  }
 
-          this->state = "KEEP_LANE";
+  // Slow down if too close
+  if (car_ahead == true && this->desired_speed > ref_speed)
+  {
+    this->desired_speed -= 0.224;
+  }
+  // Otherwise speed up incrementally
+  else if (this->desired_speed < MAX_SPEED)
+  {
+    this->desired_speed += 0.224;
+  }
 
+  this->state = "KEEP_LANE";
+}
+
+vector<string> Vehicle::get_successor_states(){
+
+  vector<string> states;
+  states.push_back("KEEP_LANE");
+
+  string state = this->state;
+
+  if (state.compare("KEEP_LANE") == 0)
+  {
+    states.push_back("PREPARE_LANE_CHANGE_LEFT");
+    states.push_back("PREPARE_LANE_CHANGE_RIGHT");
+  }
+  else if (state.compare("PREPARE_LANE_CHANGE_LEFT") == 0)
+  {
+    if (this->lane != 2)
+    {
+      states.push_back("PREPARE_LANE_CHANGE_LEFT");
+      states.push_back("LANE_CHANGE_LEFT");
+    }
+  }
+  else if (state.compare("PREPARE_LANE_CHANGE_RIGHT") == 0)
+  {
+    if (this->lane != 0)
+    {
+      states.push_back("PREPARE_LANE_CHANGE_RIGHT");
+      states.push_back("LANE_CHANGE_RIGHT");
+    }
+  }
+
+  // If state is "LCL" or "LCR", then just return "KL"
+  return states;
 }
 
 Vehicle::~Vehicle() {}
