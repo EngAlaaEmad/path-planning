@@ -58,37 +58,4 @@ void Vehicle::keep_lane(int lane, double ref_speed, double MAX_SPEED, vector<dou
   this->state = "KEEP_LANE";
 }
 
-vector<string> Vehicle::get_successor_states(){
-
-  vector<string> states;
-  states.push_back("KEEP_LANE");
-
-  string state = this->state;
-
-  if (state.compare("KEEP_LANE") == 0)
-  {
-    states.push_back("PREPARE_LANE_CHANGE_LEFT");
-    states.push_back("PREPARE_LANE_CHANGE_RIGHT");
-  }
-  else if (state.compare("PREPARE_LANE_CHANGE_LEFT") == 0)
-  {
-    if (this->lane != 2)
-    {
-      states.push_back("PREPARE_LANE_CHANGE_LEFT");
-      states.push_back("LANE_CHANGE_LEFT");
-    }
-  }
-  else if (state.compare("PREPARE_LANE_CHANGE_RIGHT") == 0)
-  {
-    if (this->lane != 0)
-    {
-      states.push_back("PREPARE_LANE_CHANGE_RIGHT");
-      states.push_back("LANE_CHANGE_RIGHT");
-    }
-  }
-
-  // If state is "LCL" or "LCR", then just return "KL"
-  return states;
-}
-
 Vehicle::~Vehicle() {}

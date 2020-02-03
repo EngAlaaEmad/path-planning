@@ -25,7 +25,6 @@ class Vehicle {
         int lane = 1;
         string state = "KEEP_LANE";
         void keep_lane(int lane, double ref_speed, double MAX_SPEED, vector<double> previous_path_x, vector<double> previous_path_y, double end_path_s, vector<vector<double>> sensor_data);
-        vector<string> get_successor_states();
         ~Vehicle();
 
 };

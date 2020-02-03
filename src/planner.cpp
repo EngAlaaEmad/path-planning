@@ -121,3 +121,36 @@ vector<vector<double>> Planner::generate_trajectory(Vehicle car, double lane, ve
     return trajectory;
 
 }
+
+vector<string> Planner::get_successor_states(Vehicle car){
+
+  vector<string> states;
+  states.push_back("KEEP_LANE");
+
+  string state = car.state;
+
+  if (state.compare("KEEP_LANE") == 0)
+  {
+    states.push_back("PREPARE_LANE_CHANGE_LEFT");
+    states.push_back("PREPARE_LANE_CHANGE_RIGHT");
+  }
+  else if (state.compare("PREPARE_LANE_CHANGE_LEFT") == 0)
+  {
+    if (car.lane != 2)
+    {
+      states.push_back("PREPARE_LANE_CHANGE_LEFT");
+      states.push_back("LANE_CHANGE_LEFT");
+    }
+  }
+  else if (state.compare("PREPARE_LANE_CHANGE_RIGHT") == 0)
+  {
+    if (car.lane != 0)
+    {
+      states.push_back("PREPARE_LANE_CHANGE_RIGHT");
+      states.push_back("LANE_CHANGE_RIGHT");
+    }
+  }
+
+  // If state is "LCL" or "LCR", then just return "KL"
+  return states;
+}
