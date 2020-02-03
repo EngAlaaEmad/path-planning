@@ -108,7 +108,9 @@ int main() {
           
           car.keep_lane(lane, ref_speed, MAX_SPEED, previous_path_x, previous_path_y, end_path_s, sensor_fusion);
 
-          vector<vector<double>> trajectory = path_planner.generate_trajectory(car, lane, previous_path_x, previous_path_y, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+          string state = "KEEP_LANE";
+
+          vector<vector<double>> trajectory = path_planner.generate_trajectory(state, car, previous_path_x, previous_path_y, map_waypoints_s, map_waypoints_x, map_waypoints_y);
           vector<double> next_x_vals = trajectory[0];
           vector<double> next_y_vals = trajectory[1];
 
