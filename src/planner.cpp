@@ -162,12 +162,22 @@ vector<string> Planner::get_successor_states(Vehicle car)
     return states;
 }
 
-int Planner::proximity_to_other_vehicles(int desired_lane, Vehicle car, vector<vector<double>> sensor_data){
+int Planner::lane_change_cost(string state, Vehicle car, vector<vector<double>> sensor_data){
 
-    if (car.lane = desired_lane){
+    int desired_lane = 1;
+    
+    if (state == "KEEP_LANE")
+    {
         return 0;
     }
-    int safe_to_change_lanes = 1;
+    else if (state == "LANE_CHANGE_LEFT"){
+        desired_lane = car.lane - 1;
+    }
+    else if (state == "LANE_CHANGE_RIGHT"){
+        desired_lane = car.lane + 1;
+    }
+
+    int lane_change_cost = 0;
 
     for (int i = 0; i < sensor_data.size(); i++) {
         // data for ith car
@@ -182,14 +192,15 @@ int Planner::proximity_to_other_vehicles(int desired_lane, Vehicle car, vector<v
             double check_car_s = sensor_data[i][5];
 
             if (abs(check_car_s - car.s) < 10){
-                safe_to_change_lanes = 0;
+                lane_change_cost = 99999;
                 break;
             }
             
         }
     }
+    std::cout << "lane change cost: " << lane_change_cost << std::endl;
 
-    return safe_to_change_lanes;
+    return lane_change_cost;
 
 }
 

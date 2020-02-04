@@ -121,13 +121,14 @@ int main() {
 
           for (int i = 0; i < possible_states.size(); i++){
             double cost_for_state = 0.0;
+            cost_for_state += path_planner.lane_change_cost(possible_states[i], car, sensor_fusion);
             cost_for_state += path_planner.lane_speed_cost(possible_states[i], car, sensor_fusion);
             cost_for_state += path_planner.num_of_vehicles_cost(possible_states[i], car, sensor_fusion);
             costs.push_back(cost_for_state);
           }
 
           string best_state;
-          double min_cost = 99999;
+          double min_cost = 999999;
 
           for (int i = 0; i < costs.size(); i++){
             if (costs[i] < min_cost){
