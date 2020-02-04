@@ -192,6 +192,7 @@ int Planner::lane_change_cost(string state, Vehicle car, vector<vector<double>> 
             double check_car_s = sensor_data[i][5];
 
             if (abs(check_car_s - car.s) < 10){
+                std::cout << "car in lane " << desired_lane << std::endl;
                 lane_change_cost = 99999;
                 break;
             }
@@ -240,9 +241,6 @@ double Planner::lane_speed_cost(string state, Vehicle car, vector<vector<double>
 
     average_speed = (num_of_relevant_cars > 0) ? (average_speed * 2.24 / num_of_relevant_cars) : (49.5);
     double lane_speed_cost = 49.5 - average_speed;
-    
-    std::cout << "average speed for lane " << desired_lane << ": " << average_speed << std::endl;
-    std::cout << "speed cost for " << state << " : " << lane_speed_cost << std::endl;
 
     return lane_speed_cost;
 }

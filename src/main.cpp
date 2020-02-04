@@ -106,7 +106,7 @@ int main() {
            *   sequentially every .02 seconds
            */
 
-          car.set_speed(ref_speed, MAX_SPEED, previous_path_x, previous_path_y, end_path_s, sensor_fusion);
+          
 
           string state = "KEEP_LANE";
 
@@ -144,6 +144,8 @@ int main() {
           std::cout << std::endl;
 
           std::cout << "Next state: " << best_state << std::endl;*/
+
+          car.set_speed(ref_speed, MAX_SPEED, previous_path_x, previous_path_y, end_path_s, sensor_fusion);
 
           vector<vector<double>> trajectory = path_planner.generate_trajectory(best_state, car, previous_path_x, previous_path_y, map_waypoints_s, map_waypoints_x, map_waypoints_y);
           vector<double> next_x_vals = trajectory[0];

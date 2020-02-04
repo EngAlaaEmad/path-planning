@@ -13,9 +13,10 @@ Vehicle::Vehicle(double x, double y, double s, double d, double yaw, double spee
 void Vehicle::set_speed(double ref_speed, double MAX_SPEED, vector<double> previous_path_x, vector<double> previous_path_y, double end_path_s, vector<vector<double>> sensor_data){
 
   int prev_size = previous_path_x.size();
+  double car_ref_s = this->s;
   if (prev_size > 0)
   {
-    this->s = end_path_s;
+    car_ref_s = end_path_s;
   }
 
   bool car_ahead = false;
@@ -36,7 +37,7 @@ void Vehicle::set_speed(double ref_speed, double MAX_SPEED, vector<double> previ
       // project cars s value out to end of path (future pos)
       check_car_s += (double)prev_size * 0.02 * check_speed;
 
-      if ((check_car_s > this->s) && (check_car_s - this->s < 2 * (this->desired_speed) * 0.447))
+      if ((check_car_s > car_ref_s) && (check_car_s - car_ref_s < 2 * (this->desired_speed) * 0.447))
       {
         car_ahead = true;
         ref_speed = check_speed;
