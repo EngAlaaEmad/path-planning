@@ -190,3 +190,28 @@ int Planner::proximity_to_other_vehicles(int desired_lane, Vehicle car, vector<v
     return safe_to_change_lanes;
 
 }
+
+double lane_speed_cost(int desired_lane, Vehicle car, vector<vector<double>> sensor_data){
+
+    double average_speed = 0.0;
+
+    for (int i = 0; i < sensor_data.size(); i++) {
+        // data for ith car
+        float d = sensor_data[i][6];
+
+        // check if car is in our lane
+        if (d < (2 + 4 * desired_lane + 2) && d > (2 + 4 * desired_lane - 2)){
+
+            double vx = sensor_data[i][3];
+            double vy = sensor_data[i][4];
+            double check_speed = sqrt(vx * vx + vy * vy);
+            average_speed += check_speed;
+            
+        }
+    }
+
+    average_speed /= sensor_data.size();
+    double cost = 1 / average_speed;
+
+    return cost;
+}

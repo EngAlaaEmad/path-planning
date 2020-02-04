@@ -106,7 +106,6 @@ int main() {
            *   sequentially every .02 seconds
            */
           
-          path_planner.proximity_to_other_vehicles(0, car, sensor_fusion);
 
           car.keep_lane(lane, ref_speed, MAX_SPEED, previous_path_x, previous_path_y, end_path_s, sensor_fusion);
 
