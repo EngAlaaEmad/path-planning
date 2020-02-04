@@ -182,7 +182,7 @@ int Planner::lane_change_cost(string state, Vehicle car, vector<vector<double>> 
         desired_lane = car.lane + 1;
     }
 
-    int lane_change_cost = 5;
+    int lane_change_cost = 2;
 
     for (int i = 0; i < sensor_data.size(); i++) {
         // data for ith car
@@ -232,8 +232,8 @@ double Planner::lane_speed_cost(string state, Vehicle car, vector<vector<double>
         float d = sensor_data[i][6];
         double check_car_s = sensor_data[i][5];
 
-        // check if car is in our lane and ahead of us
-        if (d < (2 + 4 * desired_lane + 2) && d > (2 + 4 * desired_lane - 2) && check_car_s > car.s){
+        // check if car is in our lane and ahead of us but not too far
+        if (d < (2 + 4 * desired_lane + 2) && d > (2 + 4 * desired_lane - 2) && check_car_s > car.s && check_car_s - car.s < 60){
 
             double vx = sensor_data[i][3];
             double vy = sensor_data[i][4];
