@@ -13,13 +13,18 @@ vector<vector<double>> Planner::generate_trajectory(string state, Vehicle &car, 
     if (state == "KEEP_LANE")
     {
         lane = car.lane;
+        std::cout << "keeping in lane " << lane << std::endl;
     }
     else if (state == "LANE_CHANGE_LEFT"){
         lane = car.lane - 1;
+        std::cout << "changing to lane " << lane << std::endl;
     }
     else if (state == "LANE_CHANGE_RIGHT"){
         lane = car.lane + 1;
+        std::cout << "changing to lane " << lane << std::endl;
     }
+
+    
 
     vector<double> anchor_x;
     vector<double> anchor_y;
