@@ -106,9 +106,6 @@ int main() {
            *   sequentially every .02 seconds
            */
 
-          
-
-          string state = "KEEP_LANE";
 
           vector<string> possible_states = path_planner.get_successor_states(car);
           vector<double> costs;
