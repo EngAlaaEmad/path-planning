@@ -55,7 +55,6 @@ void Vehicle::set_speed(double ref_speed, double MAX_SPEED, vector<double> previ
     this->desired_speed += 0.224;
   }
 
-  this->state = "KEEP_LANE";
 }
 
 Vehicle::~Vehicle() {}
