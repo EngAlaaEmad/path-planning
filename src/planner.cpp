@@ -133,6 +133,8 @@ vector<vector<double>> Planner::generate_trajectory(string state, Vehicle car, v
     trajectory.push_back(next_x_vals);
     trajectory.push_back(next_y_vals);
 
+    car.lane = lane;
+
     return trajectory;
 }
 
@@ -191,7 +193,19 @@ int Planner::proximity_to_other_vehicles(int desired_lane, Vehicle car, vector<v
 
 }
 
-double lane_speed_cost(int desired_lane, Vehicle car, vector<vector<double>> sensor_data){
+double lane_speed_cost(string state, Vehicle car, vector<vector<double>> sensor_data){
+
+    int desired_lane = 1;
+    if (state == "KEEP_LANE")
+    {
+        desired_lane = car.lane;
+    }
+    else if (state == "LANE_CHANGE_LEFT"){
+        desired_lane = car.lane - 1;
+    }
+    else if (state == "LANE_CHANGE_RIGHT"){
+        desired_lane = car.lane + 1;
+    }
 
     double average_speed = 0.0;
 
@@ -216,7 +230,19 @@ double lane_speed_cost(int desired_lane, Vehicle car, vector<vector<double>> sen
     return cost;
 }
 
-double num_of_vehicles_cost(int desired_lane, Vehicle car, vector<vector<double>> sensor_data){
+double num_of_vehicles_cost(string state, Vehicle car, vector<vector<double>> sensor_data){
+    
+    int desired_lane = 1;
+    if (state == "KEEP_LANE")
+    {
+        desired_lane = car.lane;
+    }
+    else if (state == "LANE_CHANGE_LEFT"){
+        desired_lane = car.lane - 1;
+    }
+    else if (state == "LANE_CHANGE_RIGHT"){
+        desired_lane = car.lane + 1;
+    }
 
     double num_of_vehicles = 0.0;
 
