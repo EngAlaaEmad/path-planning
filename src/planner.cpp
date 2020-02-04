@@ -7,7 +7,7 @@ Planner::Planner() {}
 
 Planner::~Planner() {}
 
-vector<vector<double>> Planner::generate_trajectory(string state, Vehicle car, vector<double> previous_path_x, vector<double> previous_path_y, vector<double> map_waypoints_s, vector<double> map_waypoints_x, vector<double> map_waypoints_y)
+vector<vector<double>> Planner::generate_trajectory(string state, Vehicle &car, vector<double> previous_path_x, vector<double> previous_path_y, vector<double> map_waypoints_s, vector<double> map_waypoints_x, vector<double> map_waypoints_y)
 {
     int lane = 1;
     if (state == "KEEP_LANE")

@@ -10,7 +10,7 @@ Vehicle::Vehicle() {}
 Vehicle::Vehicle(double x, double y, double s, double d, double yaw, double speed, double desired_speed):
                 x(x), y(y), s(s), d(d), yaw(yaw), speed(speed), desired_speed(desired_speed){}
 
-void Vehicle::keep_lane(int lane, double ref_speed, double MAX_SPEED, vector<double> previous_path_x, vector<double> previous_path_y, double end_path_s, vector<vector<double>> sensor_data){
+void Vehicle::set_speed(double ref_speed, double MAX_SPEED, vector<double> previous_path_x, vector<double> previous_path_y, double end_path_s, vector<vector<double>> sensor_data){
 
   int prev_size = previous_path_x.size();
   if (prev_size > 0)
@@ -26,7 +26,7 @@ void Vehicle::keep_lane(int lane, double ref_speed, double MAX_SPEED, vector<dou
     float d = sensor_data[i][6];
 
     // check if car is in our lane
-    if (d < (2 + 4 * lane + 2) && d > (2 + 4 * lane - 2))
+    if (d < (2 + 4 * this->lane + 2) && d > (2 + 4 * this->lane - 2))
     {
       double vx = sensor_data[i][3];
       double vy = sensor_data[i][4];

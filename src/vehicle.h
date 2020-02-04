@@ -24,7 +24,7 @@ class Vehicle {
         double desired_speed = 0.0;
         int lane = 1;
         string state = "KEEP_LANE";
-        void keep_lane(int lane, double ref_speed, double MAX_SPEED, vector<double> previous_path_x, vector<double> previous_path_y, double end_path_s, vector<vector<double>> sensor_data);
+        void set_speed(double ref_speed, double MAX_SPEED, vector<double> previous_path_x, vector<double> previous_path_y, double end_path_s, vector<vector<double>> sensor_data);
         ~Vehicle();
 
 };

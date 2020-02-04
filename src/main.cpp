@@ -107,9 +107,7 @@ int main() {
            */
 
 
-          
-          
-          car.keep_lane(lane, ref_speed, MAX_SPEED, previous_path_x, previous_path_y, end_path_s, sensor_fusion);
+          car.set_speed(ref_speed, MAX_SPEED, previous_path_x, previous_path_y, end_path_s, sensor_fusion);
 
           string state = "KEEP_LANE";
 
