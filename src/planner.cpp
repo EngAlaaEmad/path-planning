@@ -182,7 +182,7 @@ int Planner::lane_change_cost(string state, Vehicle car, vector<vector<double>> 
         desired_lane = car.lane + 1;
     }
 
-    int lane_change_cost = 0;
+    int lane_change_cost = 5;
 
     for (int i = 0; i < sensor_data.size(); i++) {
         // data for ith car
