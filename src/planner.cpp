@@ -198,7 +198,7 @@ int Planner::lane_change_cost(string state, Vehicle car, vector<vector<double>> 
             
         }
     }
-    std::cout << "lane change cost: " << lane_change_cost << std::endl;
+    //std::cout << "lane change cost: " << lane_change_cost << std::endl;
 
     return lane_change_cost;
 
@@ -219,26 +219,32 @@ double Planner::lane_speed_cost(string state, Vehicle car, vector<vector<double>
     }
 
     double average_speed = 0.0;
+    int num_of_relevant_cars = 0;
 
     for (int i = 0; i < sensor_data.size(); i++) {
         // data for ith car
         float d = sensor_data[i][6];
+        double check_car_s = sensor_data[i][5];
 
-        // check if car is in our lane
-        if (d < (2 + 4 * desired_lane + 2) && d > (2 + 4 * desired_lane - 2)){
+        // check if car is in our lane and ahead of us
+        if (d < (2 + 4 * desired_lane + 2) && d > (2 + 4 * desired_lane - 2) && check_car_s > car.s){
 
             double vx = sensor_data[i][3];
             double vy = sensor_data[i][4];
             double check_speed = sqrt(vx * vx + vy * vy);
             average_speed += check_speed;
+            num_of_relevant_cars++;
             
         }
     }
 
-    average_speed /= sensor_data.size();
-    double cost = 1 / average_speed;
+    average_speed = (num_of_relevant_cars > 0) ? (average_speed * 2.24 / num_of_relevant_cars) : (49.5);
+    double lane_speed_cost = 49.5 - average_speed;
+    
+    std::cout << "average speed for lane " << desired_lane << ": " << average_speed << std::endl;
+    std::cout << "speed cost for " << state << " : " << lane_speed_cost << std::endl;
 
-    return cost;
+    return lane_speed_cost;
 }
 
 double Planner::num_of_vehicles_cost(string state, Vehicle car, vector<vector<double>> sensor_data){

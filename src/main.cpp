@@ -113,11 +113,11 @@ int main() {
           vector<string> possible_states = path_planner.get_successor_states(car);
           vector<double> costs;
 
-          std::cout << "Possible states: ";
+          /*std::cout << "Possible states: ";
           for (int i = 0; i < possible_states.size(); i++){
             std::cout << possible_states[i] << " ";
           }
-          std::cout << std::endl;
+          std::cout << std::endl;*/
 
           for (int i = 0; i < possible_states.size(); i++){
             double cost_for_state = 0.0;
@@ -137,13 +137,13 @@ int main() {
             }
           }
 
-          std::cout << "Costs: ";
+          /*std::cout << "Costs: ";
           for (int i = 0; i < costs.size(); i++){
             std::cout << costs[i] << " ";
           }
           std::cout << std::endl;
 
-          std::cout << "Next state: " << best_state << std::endl;
+          std::cout << "Next state: " << best_state << std::endl;*/
 
           vector<vector<double>> trajectory = path_planner.generate_trajectory(best_state, car, previous_path_x, previous_path_y, map_waypoints_s, map_waypoints_x, map_waypoints_y);
           vector<double> next_x_vals = trajectory[0];
