@@ -133,6 +133,7 @@ int main() {
               best_state = possible_states[i];
             }
           }
+          car.state = best_state;
 
           /*std::cout << "Costs: ";
           for (int i = 0; i < costs.size(); i++){
