@@ -11,6 +11,7 @@ class Planner {
     vector<string> get_successor_states(Vehicle car);
     int proximity_to_other_vehicles(int desired_lane, Vehicle car, vector<vector<double>> sensor_data);
     double lane_speed_cost(int desired_lane, Vehicle car, vector<vector<double>> sensor_data);
+    double num_of_vehicles_cost(int desired_lane, Vehicle car, vector<vector<double>> sensor_data);
     ~Planner();
 
 

@@ -215,3 +215,21 @@ double lane_speed_cost(int desired_lane, Vehicle car, vector<vector<double>> sen
 
     return cost;
 }
+
+double num_of_vehicles_cost(int desired_lane, Vehicle car, vector<vector<double>> sensor_data){
+
+    double num_of_vehicles = 0.0;
+
+        for (int i = 0; i < sensor_data.size(); i++) {
+            // data for ith car
+            float d = sensor_data[i][6];
+
+            // check if car is in our lane
+            if (d < (2 + 4 * desired_lane + 2) && d > (2 + 4 * desired_lane - 2)){
+                num_of_vehicles++;       
+            }
+        }
+
+    return num_of_vehicles;
+
+}
