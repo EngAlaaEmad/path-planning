@@ -106,12 +106,31 @@ int main() {
            *   sequentially every .02 seconds
            */
 
-
           car.set_speed(ref_speed, MAX_SPEED, previous_path_x, previous_path_y, end_path_s, sensor_fusion);
 
           string state = "KEEP_LANE";
 
-          vector<vector<double>> trajectory = path_planner.generate_trajectory(state, car, previous_path_x, previous_path_y, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+          vector<string> possible_states = path_planner.get_successor_states(car);
+          vector<double> costs;
+
+          for (int i = 0; i < possible_states.size(); i++){
+            double cost_for_state = 0.0;
+            cost_for_state += path_planner.lane_speed_cost(possible_states[i], car, sensor_fusion);
+            cost_for_state += path_planner.num_of_vehicles_cost(possible_states[i], car, sensor_fusion);
+            costs.push_back(cost_for_state);
+          }
+
+          string best_state;
+          double min_cost = 99999;
+
+          for (int i = 0; i < costs.size(); i++){
+            if (costs[i] < min_cost){
+              min_cost = costs[i];
+              best_state = possible_states[i];
+            }
+          }
+
+          vector<vector<double>> trajectory = path_planner.generate_trajectory(best_state, car, previous_path_x, previous_path_y, map_waypoints_s, map_waypoints_x, map_waypoints_y);
           vector<double> next_x_vals = trajectory[0];
           vector<double> next_y_vals = trajectory[1];
 

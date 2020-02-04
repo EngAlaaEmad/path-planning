@@ -193,7 +193,7 @@ int Planner::proximity_to_other_vehicles(int desired_lane, Vehicle car, vector<v
 
 }
 
-double lane_speed_cost(string state, Vehicle car, vector<vector<double>> sensor_data){
+double Planner::lane_speed_cost(string state, Vehicle car, vector<vector<double>> sensor_data){
 
     int desired_lane = 1;
     if (state == "KEEP_LANE")
@@ -230,7 +230,7 @@ double lane_speed_cost(string state, Vehicle car, vector<vector<double>> sensor_
     return cost;
 }
 
-double num_of_vehicles_cost(string state, Vehicle car, vector<vector<double>> sensor_data){
+double Planner::num_of_vehicles_cost(string state, Vehicle car, vector<vector<double>> sensor_data){
     
     int desired_lane = 1;
     if (state == "KEEP_LANE")
