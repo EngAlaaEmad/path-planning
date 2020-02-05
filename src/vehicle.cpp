@@ -36,7 +36,7 @@ void Vehicle::set_speed(double ref_speed, double MAX_SPEED, vector<double> previ
       // project cars s value out to end of path (future pos)
       check_car_s += (double)prev_size * 0.02 * check_speed;
 
-      if ((check_car_s > this->s) && (check_car_s - this->s < 2 * (this->desired_speed) * 0.447))
+      if ((check_car_s > this->s) && (check_car_s - this->s < 1.5 * (this->desired_speed) * 0.447))
       {
         car_ahead = true;
         ref_speed = check_speed;
