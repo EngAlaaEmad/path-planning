@@ -115,6 +115,8 @@ int main() {
             std::cout << possible_states[i] << " ";
           }
           std::cout << std::endl;*/
+          std::cout << "-----------------------" << std::endl;
+          std::cout << "Ego vehicle at s = " << car.s << std::endl;
 
           for (int i = 0; i < possible_states.size(); i++){
             double cost_for_state = 0.0;
@@ -123,6 +125,8 @@ int main() {
             cost_for_state += path_planner.num_of_vehicles_cost(possible_states[i], car, sensor_fusion);
             costs.push_back(cost_for_state);
           }
+
+          std::cout << "-----------------------" << std::endl;
 
           string best_state;
           double min_cost = 999999;

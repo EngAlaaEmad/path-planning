@@ -195,9 +195,9 @@ int Planner::lane_change_cost(string state, Vehicle car, vector<vector<double>> 
             double vy = sensor_data[i][4];
             double check_speed = sqrt(vx * vx + vy * vy);
             double check_car_s = sensor_data[i][5];
-
+            std::cout << "Vehicle in lane " << desired_lane << "at s = " << check_car_s << std::endl;
             if (abs(check_car_s - car.s) < 10){
-                std::cout << "car in lane " << desired_lane << std::endl;
+                std::cout << "UNSAFE TO CHANGE TO LANE " << desired_lane << std::endl;
                 lane_change_cost = 99999;
                 break;
             }
