@@ -151,7 +151,7 @@ vector<string> Planner::get_successor_states(Vehicle car)
 
     string state = car.state;
 
-    if (state == "KEEP_LANE")
+    if (state == "KEEP_LANE" && car.keep_lane_cnt > 50)
     {
         if (car.lane != 0){
             states.push_back("LANE_CHANGE_LEFT");

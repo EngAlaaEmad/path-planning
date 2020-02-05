@@ -135,6 +135,13 @@ int main() {
           }
           car.state = best_state;
 
+          if (car.state == "KEEP_LANE"){
+            car.keep_lane_cnt++;
+          }
+          else{
+            car.keep_lane_cnt = 0;
+          }
+
           /*std::cout << "Costs: ";
           for (int i = 0; i < costs.size(); i++){
             std::cout << costs[i] << " ";
