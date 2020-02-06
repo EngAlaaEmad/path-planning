@@ -8,7 +8,7 @@ Planner::Planner() {}
 Planner::Planner(Vehicle &car, double max_speed, int lane, double start_speed){
     this->max_speed = max_speed;
     car.lane = lane;
-    car.desired_speed = start_speed;
+    car.current_speed = start_speed;
 }
 
 Planner::~Planner() {}
@@ -120,7 +120,7 @@ vector<vector<double>> Planner::generate_trajectory(string state, Vehicle &car, 
     for (int i = 1; i <= 50 - prev_size; i++)
     {
 
-        double N = target_dist / (0.02 * car.desired_speed / 2.24);
+        double N = target_dist / (0.02 * car.current_speed / 2.24);
         double x_point = x_add_on + target_x / N;
         double y_point = s(x_point);
 
@@ -202,23 +202,23 @@ int Planner::lane_change_cost(string state, Vehicle car, vector<vector<double>> 
             double check_speed = sqrt(vx * vx + vy * vy)*2.24; // mph
             double check_car_s = sensor_data[i][5];
 
-            double speed_diff = abs(car.desired_speed - check_speed);
+            double speed_diff = abs(car.current_speed - check_speed);
 
             bool safe_to_change;
             if (check_car_s > car.s){
-                if (car.desired_speed > check_speed){
-                    safe_to_change = abs(check_car_s - car.s) > 1 * (car.desired_speed + speed_diff) * 0.447;
+                if (car.current_speed > check_speed){
+                    safe_to_change = abs(check_car_s - car.s) > 1 * (car.current_speed + speed_diff) * 0.447;
                 }
                 else{
-                    safe_to_change = abs(check_car_s - car.s) > 0.5 * (car.desired_speed - speed_diff) * 0.447;
+                    safe_to_change = abs(check_car_s - car.s) > 0.5 * (car.current_speed - speed_diff) * 0.447;
                 }
             }
             else{
-                if (car.desired_speed > check_speed){
-                    safe_to_change = abs(check_car_s - car.s) > 0.5 * (car.desired_speed - speed_diff) * 0.447;
+                if (car.current_speed > check_speed){
+                    safe_to_change = abs(check_car_s - car.s) > 0.5 * (car.current_speed - speed_diff) * 0.447;
                 }
                 else{
-                    safe_to_change = abs(check_car_s - car.s) > 1 * (car.desired_speed + speed_diff) * 0.447;
+                    safe_to_change = abs(check_car_s - car.s) > 1 * (car.current_speed + speed_diff) * 0.447;
                 }
             }
 
@@ -331,7 +331,7 @@ void Planner::set_speed(Vehicle &car, vector<double> previous_path_x, vector<dou
       // project cars s value out to end of path (future pos)
       check_car_s += (double)prev_size * 0.02 * check_speed;
 
-      if ((check_car_s > car.s) && (check_car_s - car.s < 1.5 * (car.desired_speed) * 0.447))
+      if ((check_car_s > car.s) && (check_car_s - car.s < 1.5 * (car.current_speed) * 0.447))
       {
         car_ahead = true;
         this->ref_speed = check_speed;
@@ -340,14 +340,14 @@ void Planner::set_speed(Vehicle &car, vector<double> previous_path_x, vector<dou
   }
 
   // Slow down if too close
-  if (car_ahead == true && car.desired_speed > this->ref_speed)
+  if (car_ahead == true && car.current_speed > this->ref_speed)
   {
-    car.desired_speed -= 0.224;
+    car.current_speed -= 0.224;
   }
   // Otherwise speed up incrementally
-  else if (car.desired_speed < this->max_speed)
+  else if (car.current_speed < this->max_speed)
   {
-    car.desired_speed += 0.224;
+    car.current_speed += 0.224;
   }
 
 }

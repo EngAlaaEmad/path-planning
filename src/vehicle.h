@@ -2,28 +2,21 @@
 #define VEHICLE_H
 
 #include <string>
-
 using std::string;
 
 class Vehicle {
 
-    private:
-        
-
     public:
-        Vehicle();
-        Vehicle(double x, double y, double s, double d, double yaw, double speed, double desired_speed);
         double x;
         double y;
         double s;
         double d;
         double yaw;
         double speed;
-        double desired_speed = 0.0;
+        double current_speed;
         int lane;
         int keep_lane_cnt = 0;
         string state = "KEEP_LANE";
-        ~Vehicle();
 
 };
 
