@@ -5,6 +5,12 @@
 
 Planner::Planner() {}
 
+Planner::Planner(Vehicle &car, double max_speed, int lane, double start_speed){
+    this->max_speed = max_speed;
+    car.lane = lane;
+    car.desired_speed = start_speed;
+}
+
 Planner::~Planner() {}
 
 vector<vector<double>> Planner::generate_trajectory(string state, Vehicle &car, vector<double> previous_path_x, vector<double> previous_path_y, vector<double> map_waypoints_s, vector<double> map_waypoints_x, vector<double> map_waypoints_y)
@@ -195,7 +201,6 @@ int Planner::lane_change_cost(string state, Vehicle car, vector<vector<double>> 
             double vy = sensor_data[i][4];
             double check_speed = sqrt(vx * vx + vy * vy)*2.24; // mph
             double check_car_s = sensor_data[i][5];
-            std::cout << "Vehicle in lane " << desired_lane << " at s = " << check_car_s << std::endl;
 
             double speed_diff = abs(car.desired_speed - check_speed);
 
@@ -218,14 +223,12 @@ int Planner::lane_change_cost(string state, Vehicle car, vector<vector<double>> 
             }
 
             if (!safe_to_change){
-                std::cout << "UNSAFE TO CHANGE TO LANE " << desired_lane << std::endl;
                 lane_change_cost = 99999;
                 break;
             }
             
         }
     }
-    //std::cout << "lane change cost: " << lane_change_cost << std::endl;
 
     return lane_change_cost;
 

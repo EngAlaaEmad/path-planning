@@ -52,13 +52,14 @@ int main() {
     map_waypoints_dy.push_back(d_y);
   }
 
-  // Set lane and speed
-  const double MAX_SPEED = 49.5;
+  double max_speed = 49.5;
+  int starting_lane = 1;
+  double start_speed = 0.0;
 
   Vehicle car;
-  Planner path_planner;
+  Planner path_planner(car, max_speed, starting_lane, start_speed);
 
-  h.onMessage([&MAX_SPEED, &car, &path_planner, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
+  h.onMessage([&car, &path_planner, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
                &map_waypoints_dx,&map_waypoints_dy]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                uWS::OpCode opCode) {
@@ -88,8 +89,6 @@ int main() {
           // Previous path data given to the Planner
           auto previous_path_x = j[1]["previous_path_x"];
           auto previous_path_y = j[1]["previous_path_y"];
-          // Number of points remaining from previous path
-          int prev_size = previous_path_x.size();
 
           // Previous path's end s and d values 
           double end_path_s = j[1]["end_path_s"];
@@ -99,22 +98,11 @@ int main() {
           //   of the road.
           auto sensor_fusion = j[1]["sensor_fusion"];
 
-          /**
-           * TODO: define a path made up of (x,y) points that the car will visit
-           *   sequentially every .02 seconds
-           */
-
-
+          // Get a list of possible FSM states based on current state
           vector<string> possible_states = path_planner.get_successor_states(car);
+          
+          // Calculate costs for each possible state
           vector<double> costs;
-
-          /*std::cout << "Possible states: ";
-          for (int i = 0; i < possible_states.size(); i++){
-            std::cout << possible_states[i] << " ";
-          }
-          std::cout << std::endl;*/
-          std::cout << "-----------------------" << std::endl;
-          std::cout << "Ego vehicle at s = " << car.s << std::endl;
 
           for (int i = 0; i < possible_states.size(); i++){
             double cost_for_state = 0.0;
@@ -123,8 +111,6 @@ int main() {
             cost_for_state += path_planner.num_of_vehicles_cost(possible_states[i], car, sensor_fusion);
             costs.push_back(cost_for_state);
           }
-
-          std::cout << "-----------------------" << std::endl;
 
           string best_state;
           double min_cost = 999999;
@@ -144,23 +130,13 @@ int main() {
             car.keep_lane_cnt = 0;
           }
 
-          /*std::cout << "Costs: ";
-          for (int i = 0; i < costs.size(); i++){
-            std::cout << costs[i] << " ";
-          }
-          std::cout << std::endl;
-
-          std::cout << "Next state: " << best_state << std::endl;*/
-
+          // Set speed, either accelerating towards max_speed or following vehicle
           path_planner.set_speed(car, previous_path_x, previous_path_y, end_path_s, sensor_fusion);
 
+          // Generate trajectory (x,y points) based on best next state
           vector<vector<double>> trajectory = path_planner.generate_trajectory(best_state, car, previous_path_x, previous_path_y, map_waypoints_s, map_waypoints_x, map_waypoints_y);
           vector<double> next_x_vals = trajectory[0];
           vector<double> next_y_vals = trajectory[1];
-
-          
-
-          // std::cout << "Vehicle state: " << car.state << std::endl;
           
           // END
           json msgJson;

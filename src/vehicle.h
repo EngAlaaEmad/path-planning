@@ -20,7 +20,7 @@ class Vehicle {
         double yaw;
         double speed;
         double desired_speed = 0.0;
-        int lane = 1;
+        int lane;
         int keep_lane_cnt = 0;
         string state = "KEEP_LANE";
         ~Vehicle();
