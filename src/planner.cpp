@@ -301,3 +301,50 @@ double Planner::num_of_vehicles_cost(string state, Vehicle car, vector<vector<do
     return num_of_vehicles;
 
 }
+
+void Planner::set_speed(Vehicle &car, vector<double> previous_path_x, vector<double> previous_path_y, double end_path_s, vector<vector<double>> sensor_data){
+
+  int prev_size = previous_path_x.size();
+  if (prev_size > 0)
+  {
+    car.s = end_path_s;
+  }
+
+  bool car_ahead = false;
+
+  for (int i = 0; i < sensor_data.size(); i++)
+  {
+    // data for ith car
+    float d = sensor_data[i][6];
+
+    // check if car is in our lane
+    if (d < (2 + 4 * car.lane + 2) && d > (2 + 4 * car.lane - 2))
+    {
+      double vx = sensor_data[i][3];
+      double vy = sensor_data[i][4];
+      double check_speed = sqrt(vx * vx + vy * vy);
+      double check_car_s = sensor_data[i][5];
+
+      // project cars s value out to end of path (future pos)
+      check_car_s += (double)prev_size * 0.02 * check_speed;
+
+      if ((check_car_s > car.s) && (check_car_s - car.s < 1.5 * (car.desired_speed) * 0.447))
+      {
+        car_ahead = true;
+        this->ref_speed = check_speed;
+      }
+    }
+  }
+
+  // Slow down if too close
+  if (car_ahead == true && car.desired_speed > this->ref_speed)
+  {
+    car.desired_speed -= 0.224;
+  }
+  // Otherwise speed up incrementally
+  else if (car.desired_speed < this->max_speed)
+  {
+    car.desired_speed += 0.224;
+  }
+
+}

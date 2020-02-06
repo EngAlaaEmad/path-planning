@@ -53,14 +53,12 @@ int main() {
   }
 
   // Set lane and speed
-  int lane = 1;
   const double MAX_SPEED = 49.5;
-  double ref_speed = MAX_SPEED;
 
   Vehicle car;
   Planner path_planner;
 
-  h.onMessage([&lane, &ref_speed, &MAX_SPEED, &car, &path_planner, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
+  h.onMessage([&MAX_SPEED, &car, &path_planner, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
                &map_waypoints_dx,&map_waypoints_dy]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                uWS::OpCode opCode) {
@@ -154,7 +152,7 @@ int main() {
 
           std::cout << "Next state: " << best_state << std::endl;*/
 
-          car.set_speed(ref_speed, MAX_SPEED, previous_path_x, previous_path_y, end_path_s, sensor_fusion);
+          path_planner.set_speed(car, previous_path_x, previous_path_y, end_path_s, sensor_fusion);
 
           vector<vector<double>> trajectory = path_planner.generate_trajectory(best_state, car, previous_path_x, previous_path_y, map_waypoints_s, map_waypoints_x, map_waypoints_y);
           vector<double> next_x_vals = trajectory[0];
