@@ -293,7 +293,7 @@ double Planner::num_of_vehicles_cost(string state, Vehicle car, vector<vector<do
             float check_car_s = sensor_data[i][5];
 
             // check if car is in our lane
-            if (d < (2 + 4 * desired_lane + 2) && d > (2 + 4 * desired_lane - 2)  && check_car_s > car.s && check_car_s - car.s < 60){
+            if (d < (2 + 4 * desired_lane + 2) && d > (2 + 4 * desired_lane - 2)  && check_car_s > car.s && check_car_s - car.s < 120){
                 num_of_vehicles++;       
             }
         }
