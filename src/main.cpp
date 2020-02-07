@@ -19,11 +19,12 @@ int main() {
   uWS::Hub h;
 
   // Load up map values for waypoint's x,y,s and d normalized normal vectors
-  vector<double> map_waypoints_x;
+  Map road_map;
+  /*vector<double> map_waypoints_x;
   vector<double> map_waypoints_y;
   vector<double> map_waypoints_s;
   vector<double> map_waypoints_dx;
-  vector<double> map_waypoints_dy;
+  vector<double> map_waypoints_dy;*/
 
   // Waypoint map to read from
   string map_file_ = "../data/highway_map.csv";
@@ -45,22 +46,26 @@ int main() {
     iss >> s;
     iss >> d_x;
     iss >> d_y;
-    map_waypoints_x.push_back(x);
-    map_waypoints_y.push_back(y);
-    map_waypoints_s.push_back(s);
-    map_waypoints_dx.push_back(d_x);
-    map_waypoints_dy.push_back(d_y);
+    road_map.waypoints_x.push_back(x);
+    road_map.waypoints_y.push_back(y);
+    road_map.waypoints_s.push_back(s);
+    road_map.waypoints_dx.push_back(d_x);
+    road_map.waypoints_dy.push_back(d_y);
   }
 
-  double max_speed = 49.5;
   int starting_lane = 1;
-  double start_speed = 0.0;
+  int lane_width = 4; // m
+  double max_speed = 49.5; // mph
+  double start_speed = 0.0; // mph
+  double max_acceleration = 0.448; // mph2
+  double following_time = 1.5; // s
+  double min_time_in_lane = 1.0; // s
 
   Vehicle car;
-  Planner path_planner(car, max_speed, starting_lane, start_speed);
+  Planner path_planner;
+  path_planner.initialize(car, starting_lane, lane_width, max_speed, start_speed, max_acceleration, following_time, min_time_in_lane);
 
-  h.onMessage([&car, &path_planner, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
-               &map_waypoints_dx,&map_waypoints_dy]
+  h.onMessage([&car, &path_planner, &road_map]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -91,12 +96,12 @@ int main() {
           auto previous_path_y = j[1]["previous_path_y"];
 
           // Previous path's end s and d values 
-          double end_path_s = j[1]["end_path_s"];
-          double end_path_d = j[1]["end_path_d"];
+          double prev_path_end_s = j[1]["end_path_s"];
+          double prev_path_end_d = j[1]["end_path_d"];
 
           // Sensor Fusion Data, a list of all other cars on the same side 
           //   of the road.
-          auto sensor_fusion = j[1]["sensor_fusion"];
+          auto sensor_data = j[1]["sensor_fusion"];
 
           // Get a list of possible FSM states based on current state
           vector<string> possible_states = path_planner.get_successor_states(car);
@@ -106,9 +111,9 @@ int main() {
 
           for (int i = 0; i < possible_states.size(); i++){
             double cost_for_state = 0.0;
-            cost_for_state += path_planner.lane_change_cost(possible_states[i], car, sensor_fusion);
-            cost_for_state += path_planner.lane_speed_cost(possible_states[i], car, sensor_fusion);
-            cost_for_state += path_planner.num_of_vehicles_cost(possible_states[i], car, sensor_fusion);
+            cost_for_state += path_planner.lane_change_cost(possible_states[i], car, sensor_data);
+            cost_for_state += path_planner.lane_speed_cost(possible_states[i], car, sensor_data);
+            cost_for_state += path_planner.num_of_vehicles_cost(possible_states[i], car, sensor_data);
             costs.push_back(cost_for_state);
           }
 
@@ -131,10 +136,10 @@ int main() {
           }
 
           // Set speed, either accelerating towards max_speed or following vehicle
-          path_planner.set_speed(car, previous_path_x, previous_path_y, end_path_s, sensor_fusion);
+          path_planner.set_speed(car, sensor_data);
 
           // Generate trajectory (x,y points) based on best next state
-          vector<vector<double>> trajectory = path_planner.generate_trajectory(best_state, car, previous_path_x, previous_path_y, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+          vector<vector<double>> trajectory = path_planner.generate_trajectory(car, previous_path_x, previous_path_y, prev_path_end_s, road_map);
           vector<double> next_x_vals = trajectory[0];
           vector<double> next_y_vals = trajectory[1];
           
