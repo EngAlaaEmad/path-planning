@@ -245,10 +245,10 @@ double Planner::lane_change_cost(string state, Vehicle car, vector<vector<double
             bool safe_to_change;
             if (vehicle_s > car.s){
                 if (car.current_speed > vehicle_speed){
-                    safe_to_change = abs(vehicle_s - car.s) > following_time * 0.66 * (car.current_speed + speed_diff) * MPH_TO_MPS;
+                    safe_to_change = abs(vehicle_s - car.s) > following_time * 0.66 * (vehicle_speed + speed_diff) * MPH_TO_MPS;
                 }
                 else{
-                    safe_to_change = abs(vehicle_s - car.s) > following_time * 0.33 * (car.current_speed - speed_diff) * MPH_TO_MPS;
+                    safe_to_change = abs(vehicle_s - car.s) > following_time * 0.33 * (vehicle_speed - speed_diff) * MPH_TO_MPS;
                 }
             }
             else{
