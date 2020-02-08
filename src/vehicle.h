@@ -12,7 +12,7 @@ class Vehicle {
         double s;
         double d;
         double yaw;
-        double speed;
+        double ref_speed;
         double current_speed;
         int lane;
         int keep_lane_cnt = 0;

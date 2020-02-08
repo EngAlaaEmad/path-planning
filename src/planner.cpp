@@ -3,7 +3,8 @@
 #include "vehicle.h"
 #include "iostream"
 
-void Planner::initialize(Vehicle &car, int lane, int lane_width, double max_speed, double start_speed, double max_acceleration, double following_time, double min_time_in_lane){
+void Planner::initialize(Vehicle &car, int lane, int lane_width, double max_speed, double start_speed, double max_acceleration, double following_time, double min_time_in_lane)
+{
     this->max_speed = max_speed;
     this->lane_width = lane_width;
     this->max_acceleration = max_acceleration;
@@ -22,60 +23,99 @@ vector<string> Planner::get_successor_states(Vehicle car)
     // Only allow lane changes after keeping lane for at least 1 second
     if (car.state == "KEEP_LANE" && car.keep_lane_cnt > (min_time_in_lane / TIME_STEP))
     {
-        if (car.lane != 0){
+        if (car.lane != 0)
+        {
             states.push_back("LANE_CHANGE_LEFT");
         }
         if (car.lane != 2)
         {
-           states.push_back("LANE_CHANGE_RIGHT"); 
+            states.push_back("LANE_CHANGE_RIGHT");
         }
-        
     }
     // If state is "LANE_CHANGE_LEFT" or "LANE_CHANGE_RIGHT", then just return "KEEP_LANE"
     return states;
 }
 
-void Planner::set_speed(Vehicle &car, vector<vector<double>> sensor_data){
+int Planner::closest_vehicle_ahead(Vehicle car, int lane, vector<vector<double>> sensor_data)
+{
 
-  double leading_vehicle_speed = 0.0;
-  bool car_ahead = false;
-  double lane_edge_left = lane_width * car.lane;
-  double lane_edge_right = lane_width * (car.lane + 1);
+    int closest_vehicle_id = -1;
+    double distance = 0.0;
+    double min_distance = 999999;
 
-  for (int i = 0; i < sensor_data.size(); i++)
-  {
-    // d coordinate for ith car
-    float vehicle_d = sensor_data[i][6];
+    double lane_edge_left = lane_width * lane;
+    double lane_edge_right = lane_width * (lane + 1);
 
-    // check if car is in our lane
-    if (vehicle_d > lane_edge_left && vehicle_d < lane_edge_right)
+    for (int i = 0; i < sensor_data.size(); i++)
     {
-      double vx = sensor_data[i][3];
-      double vy = sensor_data[i][4];
-      double vehicle_speed = sqrt(vx * vx + vy * vy);
-      double vehicle_s = sensor_data[i][5];
+        // d coordinate for ith car
+        float vehicle_d = sensor_data[i][6];
 
-      // check for vehicles ahead of us, keeping distance equivalent to 1.5 seconds
-      if ((vehicle_s > car.s) && (vehicle_s - car.s < following_time * (car.current_speed) * MPH_TO_MPS))
-      {
-        car_ahead = true;
-        leading_vehicle_speed = vehicle_speed;
-      }
+        // check if car is in our lane
+        if (vehicle_d > lane_edge_left && vehicle_d < lane_edge_right)
+        {
+            double vehicle_s = sensor_data[i][5];
+            distance = vehicle_s - car.s;
+
+            // check for vehicles ahead of us
+            if (distance > 0 && distance < min_distance)
+            {
+                min_distance = distance;
+                closest_vehicle_id = i;
+            }
+        }
     }
-  }
+    return closest_vehicle_id;
+}
 
-  // Slow down if too close
-  if (car_ahead && car.current_speed > leading_vehicle_speed)
-  {
-    car.current_speed -= max_acceleration;
-  }
+void Planner::set_speed(Vehicle &car, vector<vector<double>> sensor_data)
+{
 
-  // Otherwise speed up incrementally
-  else if (car.current_speed < max_speed)
-  {
-    car.current_speed += max_acceleration;
-  }
+    int desired_lane = 1;
 
+    if (car.state == "KEEP_LANE")
+    {
+        desired_lane = car.lane;
+    }
+    else if (car.state == "LANE_CHANGE_LEFT")
+    {
+        desired_lane = car.lane - 1;
+    }
+    else if (car.state == "LANE_CHANGE_RIGHT")
+    {
+        desired_lane = car.lane + 1;
+    }
+
+    // Set default speed
+    car.ref_speed = max_speed;
+    bool car_ahead = false;
+    double lane_edge_left = lane_width * car.lane;
+    double lane_edge_right = lane_width * (car.lane + 1);
+
+    int leading_vehicle = closest_vehicle_ahead(car, desired_lane, sensor_data);
+    if (leading_vehicle >= 0)
+    {
+        double vx = sensor_data[leading_vehicle][3];
+        double vy = sensor_data[leading_vehicle][4];
+        double vehicle_speed = sqrt(vx * vx + vy * vy);
+        double vehicle_s = sensor_data[leading_vehicle][5];
+        // check for vehicles ahead of us, keeping distance equivalent to 1.5 seconds
+        if ((vehicle_s > car.s) && (vehicle_s - car.s < following_time * (car.current_speed) * MPH_TO_MPS))
+        {
+            car_ahead = true;
+            car.ref_speed = vehicle_speed;
+        }
+    }
+
+    // Keep speed at ref_speed (either max or leading vehicle's speed)
+    if (car.current_speed > car.ref_speed)
+    {
+        car.current_speed -= max_acceleration;
+    }
+    else
+    {
+        car.current_speed += max_acceleration;
+    }
 }
 
 vector<vector<double>> Planner::generate_trajectory(Vehicle &car, vector<double> previous_path_x, vector<double> previous_path_y, double prev_path_end_s, Map &road_map)
@@ -84,11 +124,13 @@ vector<vector<double>> Planner::generate_trajectory(Vehicle &car, vector<double>
     {
         std::cout << "keeping in lane " << car.lane << std::endl;
     }
-    else if (car.state == "LANE_CHANGE_LEFT"){
+    else if (car.state == "LANE_CHANGE_LEFT")
+    {
         car.lane -= 1;
         std::cout << "changing to lane " << car.lane << std::endl;
     }
-    else if (car.state == "LANE_CHANGE_RIGHT"){
+    else if (car.state == "LANE_CHANGE_RIGHT")
+    {
         car.lane += 1;
         std::cout << "changing to lane " << car.lane << std::endl;
     }
@@ -104,7 +146,8 @@ vector<vector<double>> Planner::generate_trajectory(Vehicle &car, vector<double>
 
     // Start new trajectory from end of the previous one
     double trajectory_starting_s = car.s;
-    if (num_of_remaining_points > 0){
+    if (num_of_remaining_points > 0)
+    {
         trajectory_starting_s = prev_path_end_s;
     }
 
@@ -210,18 +253,21 @@ vector<vector<double>> Planner::generate_trajectory(Vehicle &car, vector<double>
     return trajectory;
 }
 
-double Planner::lane_change_cost(string state, Vehicle car, vector<vector<double>> sensor_data){
+double Planner::lane_change_cost(string state, Vehicle car, vector<vector<double>> sensor_data)
+{
 
     int desired_lane = 1;
-    
+
     if (state == "KEEP_LANE")
     {
         return 0.0;
     }
-    else if (state == "LANE_CHANGE_LEFT"){
+    else if (state == "LANE_CHANGE_LEFT")
+    {
         desired_lane = car.lane - 1;
     }
-    else if (state == "LANE_CHANGE_RIGHT"){
+    else if (state == "LANE_CHANGE_RIGHT")
+    {
         desired_lane = car.lane + 1;
     }
 
@@ -229,12 +275,14 @@ double Planner::lane_change_cost(string state, Vehicle car, vector<vector<double
     double lane_edge_left = lane_width * desired_lane;
     double lane_edge_right = lane_width * (desired_lane + 1);
 
-    for (int i = 0; i < sensor_data.size(); i++) {
+    for (int i = 0; i < sensor_data.size(); i++)
+    {
         // data for ith car
         float vehicle_d = sensor_data[i][6];
 
         // check if car is in our lane
-        if (vehicle_d > lane_edge_left && vehicle_d < lane_edge_right){
+        if (vehicle_d > lane_edge_left && vehicle_d < lane_edge_right)
+        {
 
             double vx = sensor_data[i][3];
             double vy = sensor_data[i][4];
@@ -243,46 +291,54 @@ double Planner::lane_change_cost(string state, Vehicle car, vector<vector<double
             double speed_diff = abs(car.current_speed - vehicle_speed);
 
             bool safe_to_change;
-            if (vehicle_s > car.s){
-                if (car.current_speed > vehicle_speed){
+            if (vehicle_s > car.s)
+            {
+                if (car.current_speed > vehicle_speed)
+                {
                     safe_to_change = abs(vehicle_s - car.s) > following_time * 0.66 * (vehicle_speed + speed_diff) * MPH_TO_MPS;
                 }
-                else{
+                else
+                {
                     safe_to_change = abs(vehicle_s - car.s) > following_time * 0.33 * (vehicle_speed - speed_diff) * MPH_TO_MPS;
                 }
             }
-            else{
-                if (car.current_speed > vehicle_speed){
+            else
+            {
+                if (car.current_speed > vehicle_speed)
+                {
                     safe_to_change = abs(vehicle_s - car.s) > following_time * 0.33 * (car.current_speed - speed_diff) * MPH_TO_MPS;
                 }
-                else{
+                else
+                {
                     safe_to_change = abs(vehicle_s - car.s) > following_time * 0.66 * (car.current_speed + speed_diff) * MPH_TO_MPS;
                 }
             }
 
-            if (!safe_to_change){
+            if (!safe_to_change)
+            {
                 lane_change_cost = 99999;
                 break;
             }
-            
         }
     }
 
     return lane_change_cost;
-
 }
 
-double Planner::lane_speed_cost(string state, Vehicle car, vector<vector<double>> sensor_data){
+double Planner::lane_speed_cost(string state, Vehicle car, vector<vector<double>> sensor_data)
+{
 
     int desired_lane = 1;
     if (state == "KEEP_LANE")
     {
         desired_lane = car.lane;
     }
-    else if (state == "LANE_CHANGE_LEFT"){
+    else if (state == "LANE_CHANGE_LEFT")
+    {
         desired_lane = car.lane - 1;
     }
-    else if (state == "LANE_CHANGE_RIGHT"){
+    else if (state == "LANE_CHANGE_RIGHT")
+    {
         desired_lane = car.lane + 1;
     }
 
@@ -291,20 +347,21 @@ double Planner::lane_speed_cost(string state, Vehicle car, vector<vector<double>
     double lane_edge_left = lane_width * desired_lane;
     double lane_edge_right = lane_width * (desired_lane + 1);
 
-    for (int i = 0; i < sensor_data.size(); i++) {
+    for (int i = 0; i < sensor_data.size(); i++)
+    {
         // data for ith car
         float vehicle_d = sensor_data[i][6];
         double vehicle_s = sensor_data[i][5];
 
         // check if car is in our lane and ahead of us but not farther than 60m
-        if (vehicle_d > lane_edge_left && vehicle_d < lane_edge_right && vehicle_s > car.s && vehicle_s - car.s < 60){
+        if (vehicle_d > lane_edge_left && vehicle_d < lane_edge_right && vehicle_s > car.s && vehicle_s - car.s < 60)
+        {
 
             double vx = sensor_data[i][3];
             double vy = sensor_data[i][4];
             double vehicle_speed = sqrt(vx * vx + vy * vy);
             average_speed += vehicle_speed;
             num_of_relevant_cars++;
-            
         }
     }
 
@@ -314,17 +371,20 @@ double Planner::lane_speed_cost(string state, Vehicle car, vector<vector<double>
     return lane_speed_cost;
 }
 
-double Planner::num_of_vehicles_cost(string state, Vehicle car, vector<vector<double>> sensor_data){
-    
+double Planner::num_of_vehicles_cost(string state, Vehicle car, vector<vector<double>> sensor_data)
+{
+
     int desired_lane = 1;
     if (state == "KEEP_LANE")
     {
         desired_lane = car.lane;
     }
-    else if (state == "LANE_CHANGE_LEFT"){
+    else if (state == "LANE_CHANGE_LEFT")
+    {
         desired_lane = car.lane - 1;
     }
-    else if (state == "LANE_CHANGE_RIGHT"){
+    else if (state == "LANE_CHANGE_RIGHT")
+    {
         desired_lane = car.lane + 1;
     }
 
@@ -333,18 +393,18 @@ double Planner::num_of_vehicles_cost(string state, Vehicle car, vector<vector<do
 
     double num_of_vehicles = 0.0;
 
-        for (int i = 0; i < sensor_data.size(); i++) {
-            // data for ith car
-            float vehicle_d = sensor_data[i][6];
-            float vehicle_s = sensor_data[i][5];
+    for (int i = 0; i < sensor_data.size(); i++)
+    {
+        // data for ith car
+        float vehicle_d = sensor_data[i][6];
+        float vehicle_s = sensor_data[i][5];
 
-            // check if car is in our lane
-            if (vehicle_d > lane_edge_left && vehicle_d < lane_edge_right && vehicle_s > car.s && vehicle_s - car.s < 120){
-                num_of_vehicles++;       
-            }
+        // check if car is in our lane
+        if (vehicle_d > lane_edge_left && vehicle_d < lane_edge_right && vehicle_s > car.s && vehicle_s - car.s < 120)
+        {
+            num_of_vehicles++;
         }
+    }
 
     return num_of_vehicles;
-
 }
-

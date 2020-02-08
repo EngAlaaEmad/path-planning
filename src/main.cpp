@@ -89,7 +89,6 @@ int main() {
           car.s = j[1]["s"];
           car.d = j[1]["d"];
           car.yaw = j[1]["yaw"];
-          car.speed = j[1]["speed"];
 
           // Previous path data given to the Planner
           auto previous_path_x = j[1]["previous_path_x"];

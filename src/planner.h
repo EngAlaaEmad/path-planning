@@ -30,6 +30,7 @@ class Planner {
 
         void initialize(Vehicle &car, int lane, int lane_width, double max_speed, double start_speed, double max_acceleration, double following_time, double min_time_in_lane);
         vector<string> get_successor_states(Vehicle car);
+        int closest_vehicle_ahead(Vehicle car, int lane, vector<vector<double>> sensor_data);
         void set_speed(Vehicle &car, vector<vector<double>> sensor_data);
         vector<vector<double>> generate_trajectory(Vehicle &car, vector<double> previous_path_x, vector<double> previous_path_y, double prev_path_end_s, Map &road_map);
         
