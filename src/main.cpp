@@ -58,7 +58,7 @@ int main() {
   double max_speed = 49.5; // mph
   double start_speed = 0.0; // mph
   double max_acceleration = 0.448; // mph2
-  double following_time = 1.5; // s
+  double following_time = 1.75; // s
   double min_time_in_lane = 1.0; // s
 
   Vehicle car;
