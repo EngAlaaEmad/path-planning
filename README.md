@@ -5,7 +5,7 @@ This repository was created as a submission for the Path Planning project of Uda
 ## Overview
 The main objective of this project was to create a C++ program which communicates with a highway simulator, sending path coordinates to drive the car under a given speed, avoid collisions and make lane changes if necessary. The project was completed using finite state machines and cost functions as described below.
 
-<img src="./images/path_planning.gif" alt="Path planning with the Udacity simulator" width="400"/>
+<img src="./images/path_planning.gif" alt="Path planning with the Udacity simulator" width="600"/>
 
 ## Inputs
 
