@@ -10,10 +10,10 @@ The main objective of this project was to create a C++ program which communicate
 ## Inputs
 
 The inputs from the simulator to the path planner are the following:
-- Main car's localization data: position in map/Frenet coordinates, yaw angle, speed
-- Previous path data: list of previous points sent by the planner, with the processed points removed
-- Previous path's end s and d values (Frenet coordinates)
-- Sensor fusion data: a 2D vector of all other cars' attributes on the same side of the road (position, speed, ID)
+- main car's localization data: position in map/Frenet coordinates, yaw angle, speed
+- previous path data: list of previous points sent by the planner, with the processed points removed
+- previous path's end s and d values (Frenet coordinates)
+- sensor fusion data: a 2D vector of all other cars' attributes on the same side of the road (position, speed, ID)
 
 ## Outputs
 
@@ -53,6 +53,13 @@ Cost functions are used to decide which state would be the best considering the 
 
 ## Running the code
 
+The repo is configured to start up by running the default build task in VS Code if the simulator is installed in the same directory. It can also be manually run using the following commands from the project's top directory:
+
+1. ```mkdir build && cd build```
+2. ```cmake .. && make```
+3. ```./path_planning```,
+
+which will run the path planner. To download and run the simulator, see: [Udacity Simulator](https://github.com/udacity/self-driving-car-sim/releases/tag/T3_v1.2)
 
 
 ## Pass criteria for the project
