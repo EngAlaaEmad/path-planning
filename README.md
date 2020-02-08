@@ -5,6 +5,8 @@ This repository was created as a submission for the Path Planning project of Uda
 ## Overview
 The main objective of this project was to create a C++ program which communicates with a highway simulator, sending path coordinates to drive the car under a given speed, avoid collisions and make lane changes if necessary. The project was completed using finite state machines and cost functions as described below.
 
+
+
 ## Inputs
 
 The inputs from the simulator to the path planner are the following:
@@ -37,10 +39,25 @@ Implementation of the path planner relies heavily on the concept of finite state
 - changing lanes to the left
 - changing lanes to the right
 
+
+
+The objective of the path planner is to use cost functions to continuously select the optimal next state based on the ego vehicle's position and the sensor data of the surrounding vehicles.
+
 ### Cost functions
+
+Cost functions are used to decide which state would be the best considering the fact that we would like to drive safe, but still as fast as possible. In this simplified model, 3 cost functions were used:
+
+- lane change cost: very high if unsafe, otherwise small
+- lane speed cost: the faster, the better
+- vehicle count cost: the less, the merrier
+
 ## Running the code
 
+
+
 ## Pass criteria for the project
+
+
 
 ## Results and Summary
 
