@@ -120,19 +120,13 @@ void Planner::set_speed(Vehicle &car, vector<vector<double>> sensor_data)
 
 vector<vector<double>> Planner::generate_trajectory(Vehicle &car, vector<double> previous_path_x, vector<double> previous_path_y, double prev_path_end_s, Map &road_map)
 {
-    if (car.state == "KEEP_LANE")
-    {
-        std::cout << "keeping in lane " << car.lane << std::endl;
-    }
-    else if (car.state == "LANE_CHANGE_LEFT")
+    if (car.state == "LANE_CHANGE_LEFT")
     {
         car.lane -= 1;
-        std::cout << "changing to lane " << car.lane << std::endl;
     }
     else if (car.state == "LANE_CHANGE_RIGHT")
     {
         car.lane += 1;
-        std::cout << "changing to lane " << car.lane << std::endl;
     }
 
     vector<double> anchor_pts_x;
