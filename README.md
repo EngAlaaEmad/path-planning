@@ -39,7 +39,7 @@ Implementation of the path planner relies heavily on the concept of finite state
 - changing lanes to the left
 - changing lanes to the right
 
-<img src="./images/fsm.png" alt="States of the model" width="400"/>
+<img src="./images/fsm.png" alt="States of the model" width="300"/>
 
 The objective of the path planner is to use cost functions to continuously select the optimal next state based on the ego vehicle's position and the sensor data of the surrounding vehicles.
 
