@@ -64,8 +64,20 @@ which will run the path planner. To download and run the simulator, see: [Udacit
 
 ## Pass criteria for the project
 
+The main requirement for this project was to be able to drive at least 4.32 miles without incident, meaning:
+- the car drives according to the speed limit
+- maximmum acceleration and jerk are not exceeded
+- the car does not have collisions
+- the car stays in its lane, except for the time between changing lanes
 
+The car should also be able to smoothly change lanes when it makes sense to do so, such as when behind a slower moving car and an adjacent lane is clear of other traffic.
 
 ## Results and Summary
 
+My path planner was able to keep lanes, follow vehicles and change lanes up to 50 miles without incident, which is far from safe in real life standards, but was sufficient for the purposes of this project and impressive considering the simplicity of the model.
 
+There are many areas in which the path planner could be improved, including the following:
+- Smoother lane changes
+- Watching out for dangerous drivers (currently most incidents are caused by other vehicles aggresively changing lanes)
+- Optimizing lane selection
+- Watching all lanes instead of only adjacent ones
